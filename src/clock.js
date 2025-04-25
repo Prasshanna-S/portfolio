@@ -1,31 +1,35 @@
 export class Clock {
-    constructor(selector){
-        this.element = document.querySelector(selector);
-        if(!this.element){
-            throw new Error(`Element with selector "${selector}" not found.`);
-        }
-        this.updateTime();
-        this.start();
+  constructor(selector) {
+    this.element = document.querySelector(selector);
+    if (!this.element) {
+      throw new Error(`Element with selector "${selector}" not found.`);
     }
+    this.updateTime(); // Initial update
+    this.start(); // Start the clock
+  }
 
-    formatTime(date) {
-        const pad = (num) => String(num).padStart(2, "0");
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-        return `${hours}:${minutes}:${seconds}`;
-    }
+  // Format the time to HH:MM:SS
+  formatTime(date) {
+    const pad = (num) => String(num).padStart(2, "0");
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+    return `${hours}:${minutes}:${seconds}`;
+  }
 
-    updateTime() {
-        const now = new Date();
-        this.element.textContent = this.formatTime(now);
-    }
+  // Update the clock element with the current time
+  updateTime() {
+    const now = new Date();
+    this.element.textContent = this.formatTime(now);
+  }
 
-    start() {
-        this.interval = setInterval(() => this.updateTime(), 1000);
-    }
+  // Start the clock and update every second
+  start() {
+    this.interval = setInterval(() => this.updateTime(), 1000);
+  }
 
-    stop() {
-        clearInterval(this.interval);
-    }
+  // Stop the clock
+  stop() {
+    clearInterval(this.interval);
+  }
 }
