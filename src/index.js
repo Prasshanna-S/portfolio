@@ -1,4 +1,4 @@
-import { Clock } from "./clock";
+import { Clock } from "./clock.js";
 import { Marquee } from "./marquee";
 
 import { reveal } from "./helpers/reveal";
