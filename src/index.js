@@ -1,7 +1,7 @@
-import {Clock} from "./clock.js";
-import { Marquee } from "./marquee.js";
+import {Clock} from "./clock";
+import { Marquee } from "./marquee";
 
-import {reveal} from "./helpers/reveal.js";
+import {reveal} from "./helpers/reveal";
 
 const clock = new Clock(".hero_clock");
 
