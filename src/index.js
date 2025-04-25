@@ -1,5 +1,5 @@
 import {Clock} from "./clock";
-// import { Marquee } from "./marquee";
+import { Marquee } from "./marquee";
 
 import {reveal} from "./helpers/reveal";
 
