@@ -32,12 +32,12 @@ class Block {
     }
   }
 
-  draw(ctx) {
+  draw(ctx, image) {
     ctx.save();
     ctx.translate(this.centerX, this.centerY);
     ctx.rotate((this.rotation * Math.PI) / 180);
     ctx.scale(this.scale, this.scale);
-    ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.drawImage(image, -this.width / 2, -this.height / 2, this.width, this.height);
     ctx.restore();
   }
 }
@@ -45,7 +45,13 @@ class Block {
 export class Grid {
   constructor() {
     console.log("Grid constructor");
-    this.setup();
+
+    this.sakuraImage = new Image();
+    this.sakuraImage.src = "./assets/sakura.png"; // or adjust path as per final location
+    this.sakuraImage.onload = () => {
+      this.setup();
+    };
+
     this.initResizeObserver();
   }
 
@@ -71,7 +77,6 @@ export class Grid {
   }
 
   initResizeObserver() {
-    // Ensure canvas exists before initializing observer
     if (!this.canvas) {
       console.error("Canvas not available for ResizeObserver");
       return;
@@ -132,8 +137,7 @@ export class Grid {
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = "#000";
-    this.blocks.forEach((block) => block.draw(this.ctx));
+    this.blocks.forEach((block) => block.draw(this.ctx, this.sakuraImage));
   }
 
   handleResize() {
