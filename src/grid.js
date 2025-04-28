@@ -132,7 +132,7 @@ export class Grid {
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = colorStore.colors.textPrimary;
+    this.ctx.fillStyle = "#000";
     this.blocks.forEach((block) => block.draw(this.ctx));
   }
 
