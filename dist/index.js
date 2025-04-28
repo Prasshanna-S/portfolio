@@ -4358,44 +4358,26 @@
 
   // src/grid.js
   var WORDS = [
-    "Product",
-    "Design",
-    "Research",
-    "Prototype",
-    "Usability",
-    "Inclusive",
-    "Wireframe",
-    "Empathy",
-    "Testing",
-    "Systems",
-    "UX",
-    "UI",
-    "Flow",
-    "Craft",
-    "Code",
-    "Visual",
     "Accessibility",
-    "Persona",
-    "Journey",
-    "Feedback",
-    "Iteration",
-    "Interaction",
-    "Heuristic",
-    "Insights",
-    "Strategy",
-    "Analytics",
-    "Scalability",
+    "Prototyping",
     "Typography",
-    "Hierarchy",
+    "Interaction",
+    "UsabilityTest",
+    "Information",
+    "Wireframing",
     "Storytelling",
-    "Consistency",
-    "Behavior",
-    "Patterns",
-    "Survey",
-    "Interview",
-    "Mapping",
-    "Sketch",
-    "Audit"
+    "UserJourney",
+    "VisualDesign",
+    "EmpathyDriven",
+    "DesignSystem",
+    "SystemThinking",
+    "BehaviorModel",
+    "ExperienceMap",
+    "HumanFactors",
+    "CognitiveLoad",
+    "Microinteractions",
+    "NavigationFlow",
+    "DesignResearch"
   ];
   var Block = class {
     constructor(x, y, width, letter = "", wordId = null) {
@@ -4411,13 +4393,41 @@
       this.rotation = 0;
       this.shouldHide = false;
       this.revealed = false;
-      this.initTweens();
-    }
-    initTweens() {
+      this.bubbleAlpha = 0;
       this.quickToScale = gsapWithCSS.quickTo(this, "scale", { duration: 0.3 });
       this.quickToRotation = gsapWithCSS.quickTo(this, "rotation", { duration: 0.3 });
     }
+    setReveal(state) {
+      this.revealed = state;
+      gsapWithCSS.to(this, {
+        bubbleAlpha: state ? 1 : 0,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    }
     draw(ctx, image) {
+      if (this.revealed && this.letter) {
+        ctx.save();
+        ctx.globalAlpha = this.bubbleAlpha;
+        ctx.fillStyle = "rgba(137, 196, 244, 0.15)";
+        ctx.strokeStyle = "rgba(137, 196, 244, 0.4)";
+        ctx.lineWidth = 1;
+        const radius = 6;
+        ctx.beginPath();
+        ctx.moveTo(this.x + radius, this.y);
+        ctx.lineTo(this.x + this.width - radius, this.y);
+        ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + radius);
+        ctx.lineTo(this.x + this.width, this.y + this.height - radius);
+        ctx.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - radius, this.y + this.height);
+        ctx.lineTo(this.x + radius, this.y + this.height);
+        ctx.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - radius);
+        ctx.lineTo(this.x, this.y + radius);
+        ctx.quadraticCurveTo(this.x, this.y, this.x + radius, this.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
       ctx.save();
       ctx.font = `${this.width * 0.5}px sans-serif`;
       ctx.textAlign = "center";
@@ -4539,23 +4549,49 @@
       gsapWithCSS.ticker.add(() => this.draw());
     }
     loadingAnimation() {
+      console.log("\u{1F300} Starting preloading stage...");
       this.blocks.forEach((block) => {
+        block.shouldHide = true;
+        block.setReveal(true);
         block.scale = 0;
         block.rotation = 0;
-        block.shouldHide = false;
       });
-      gsapWithCSS.to(this.blocks, {
-        scale: 1,
-        rotation: 360,
-        stagger: { amount: 2, from: "random" },
-        ease: "back.out(1.7)",
-        duration: 1.4,
-        onComplete: () => {
-          this.blocks.forEach((block) => block.initTweens());
-          this.loadingDone = true;
-          this.startAutoReveal();
+      gsapWithCSS.fromTo(
+        this.blocks,
+        { bubbleAlpha: 0.2 },
+        {
+          bubbleAlpha: 1,
+          duration: 0.6,
+          yoyo: true,
+          repeat: 1,
+          ease: "power1.inOut",
+          onComplete: () => {
+            console.log("\u{1F338} Starting sakura loading animation...");
+            gsapWithCSS.to(this.blocks, {
+              scale: 1,
+              rotation: 360,
+              stagger: { amount: 2, from: "random" },
+              ease: "back.out(1.7)",
+              duration: 1.4,
+              onStart: () => {
+                this.blocks.forEach((block) => {
+                  block.shouldHide = false;
+                  block.setReveal(false);
+                });
+              },
+              onComplete: () => {
+                this.blocks.forEach((block) => {
+                  block.quickToScale = gsapWithCSS.quickTo(block, "scale", { duration: 0.3 });
+                  block.quickToRotation = gsapWithCSS.quickTo(block, "rotation", { duration: 0.3 });
+                });
+                this.loadingDone = true;
+                console.log("\u{1F3AF} Loading animation complete");
+                this.startAutoReveal();
+              }
+            });
+          }
         }
-      });
+      );
     }
     revealWord(wordId, fromHover = false) {
       if (this.wordTimelineMap.has(wordId)) return;
@@ -4568,7 +4604,6 @@
       if (fromHover) this.hoveredWordIds.add(wordId);
       const tl = gsapWithCSS.timeline({ onComplete: () => this.wordTimelineMap.delete(wordId) });
       blocks.forEach((block, i) => {
-        block.revealed = true;
         tl.to(block, {
           scale: 0.1,
           rotation: block.rotation + 45,
@@ -4577,11 +4612,12 @@
           ease: "power2.out",
           onStart: () => {
             block.shouldHide = true;
+            block.setReveal(true);
           }
         }, 0);
       });
       if (!fromHover) {
-        tl.to({}, { duration: 1 });
+        tl.to({}, { duration: 1.5 });
         tl.add(() => this.hideWord(wordId), "+=0.2");
       }
       this.wordTimelineMap.set(wordId, tl);
@@ -4589,7 +4625,6 @@
     hideWord(wordId, fast = false) {
       const blocks = this.blocks.filter((b) => b.wordId === wordId && b.wordId !== null).sort((a, b) => a.x - b.x);
       blocks.forEach((block, i) => {
-        block.revealed = false;
         gsapWithCSS.to(block, {
           scale: 1,
           rotation: 0,
@@ -4598,6 +4633,7 @@
           ease: "power1.out",
           onStart: () => {
             block.shouldHide = false;
+            block.setReveal(false);
           }
         });
       });
@@ -4607,7 +4643,7 @@
       const allWordIds = [...new Set(this.blocks.map((b) => b.wordId).filter(Boolean))];
       const loop = () => {
         if (this.userInteracted) return;
-        const wordSet = [...allWordIds].sort(() => 0.5 - Math.random()).slice(0, 3);
+        const wordSet = [...allWordIds].sort(() => 0.5 - Math.random()).slice(0, 6);
         let tl = gsapWithCSS.timeline();
         this.resetAllBlocks(() => {
           wordSet.forEach((id, i) => {
