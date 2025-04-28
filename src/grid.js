@@ -45,7 +45,7 @@ class Block {
 export class Grid {
   constructor() {
     console.log("Grid constructor");
-
+//added location of image
     this.sakuraImage = new Image();
     this.sakuraImage.src = "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/680ee87386b03978885bd842_Cherry%20Blossom.png"; // or adjust path as per final location
     this.sakuraImage.onload = () => {

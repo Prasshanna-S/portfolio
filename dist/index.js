@@ -4395,7 +4395,7 @@
     constructor() {
       console.log("Grid constructor");
       this.sakuraImage = new Image();
-      this.sakuraImage.src = "./assets/sakura.png";
+      this.sakuraImage.src = "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/680ee87386b03978885bd842_Cherry%20Blossom.png";
       this.sakuraImage.onload = () => {
         this.setup();
       };
