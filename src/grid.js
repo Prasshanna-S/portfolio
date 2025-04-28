@@ -137,7 +137,7 @@ export class Grid {
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.blocks.forEach((block) => block.draw(this.ctx, this.sakuraImage));
+    this.blocks.forEach((block) => block.draw(this.ctx, this.sakuraImage)); // <-- pass the image
   }
 
   handleResize() {
