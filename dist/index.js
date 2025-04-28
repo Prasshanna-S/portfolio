@@ -4294,7 +4294,6 @@
   var TweenMaxWithCSS = gsapWithCSS.core.Tween;
 
   // src/marquee.js
-  // force push
   var Marquee = class {
     constructor(rootElement) {
       console.log("Marquee initialized");
@@ -4408,10 +4407,12 @@
         console.error("Canvas element not found");
         return;
       }
+      const scale = window.devicePixelRatio || 1;
+      this.canvas.width = this.canvas.offsetWidth * scale;
+      this.canvas.height = this.canvas.offsetHeight * scale;
       this.ctx = this.canvas.getContext("2d");
-      this.canvas.width = this.canvas.offsetWidth;
-      this.canvas.height = this.canvas.offsetHeight;
-      this.blockWidth = 16;
+      this.ctx.scale(scale, scale);
+      this.blockWidth = Math.max(20, Math.floor(this.canvas.width / scale / 50));
       this.blockGap = 8;
       this.blocks = [];
       this.createBlocks();
@@ -4470,8 +4471,12 @@
     }
     handleResize() {
       console.log("Resizing grid...");
-      this.canvas.width = this.canvas.offsetWidth;
-      this.canvas.height = this.canvas.offsetHeight;
+      const scale = window.devicePixelRatio || 1;
+      this.canvas.width = this.canvas.offsetWidth * scale;
+      this.canvas.height = this.canvas.offsetHeight * scale;
+      this.ctx.scale(scale, scale);
+      this.blockWidth = Math.max(20, Math.floor(this.canvas.width / scale / 50));
+      this.blockGap = 8;
       this.blocks = [];
       this.createBlocks();
       this.loadingAnimation();
