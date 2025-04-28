@@ -18,6 +18,20 @@ class Block {
     this.quickToRotation = gsap.quickTo(this, "rotation", { duration: 0.3 });
   }
 
+  resize(x, y, width) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = width;
+  
+    this.centerX = x + width / 2;
+    this.centerY = y + width / 2;
+  
+    // Recreate quickTo accessors since scale/rotation have changed
+    this.quickToScale = gsap.quickTo(this, "scale", { duration: 0.3 });
+    this.quickToRotation = gsap.quickTo(this, "rotation", { duration: 0.3 });
+  }
+
   handleMouse(mouseX, mouseY) {
     const relX = mouseX - this.centerX;
     const relY = mouseY - this.centerY;
@@ -143,22 +157,44 @@ export class Grid {
   }
 
   handleResize() {
-  console.log("Resizing grid...");
-
-  const scale = window.devicePixelRatio || 1;
-  this.canvas.width = this.canvas.offsetWidth * scale;
-  this.canvas.height = this.canvas.offsetHeight * scale;
-  this.ctx.scale(scale, scale);
-
-  // 🌸 Dynamic block size on resize
-  this.blockWidth = Math.max(20, Math.floor(this.canvas.width / scale / 50));
-  this.blockGap = 8;
-  this.blocks = [];
-
-  this.createBlocks();
-  this.loadingAnimation();
-  this.draw();
-}
+    console.log("Resizing grid...");
+  
+    const scale = window.devicePixelRatio || 1;
+    this.canvas.width = this.canvas.offsetWidth * scale;
+    this.canvas.height = this.canvas.offsetHeight * scale;
+    this.ctx.scale(scale, scale);
+  
+    this.blockWidth = Math.max(20, Math.floor(this.canvas.width / scale / 50));
+    this.blockGap = 8;
+  
+    const blockCount =
+      Math.floor(this.canvas.width / scale / (this.blockWidth + this.blockGap)) + 1;
+    const rowCount =
+      Math.floor(this.canvas.height / scale / (this.blockWidth + this.blockGap)) + 1;
+  
+    const newBlocks = [];
+  
+    for (let row = 0; row < rowCount; row++) {
+      for (let col = 0; col < blockCount; col++) {
+        const xPos = Math.floor(col * (this.blockWidth + this.blockGap));
+        const yPos = Math.floor(row * (this.blockWidth + this.blockGap));
+  
+        const existingBlock = this.blocks[newBlocks.length];
+        if (existingBlock) {
+          existingBlock.resize(xPos, yPos, this.blockWidth);
+          newBlocks.push(existingBlock);
+        } else {
+          newBlocks.push(new Block(xPos, yPos, this.blockWidth));
+        }
+      }
+    }
+  
+    this.blocks = newBlocks;
+  
+    this.loadingAnimation();
+    this.draw();
+  }
+  
 
   destroy() {
     console.log("Destroying Grid...");
