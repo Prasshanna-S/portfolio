@@ -10,5 +10,5 @@ marqueeElements.forEach(
   (marqueeElement, index) => new Marquee(marqueeElement, index + 1 * 20)
 );
 
-const grid = new Grid();
+const grid = new grid();
 reveal();
