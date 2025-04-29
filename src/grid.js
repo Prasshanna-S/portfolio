@@ -25,6 +25,7 @@ class Block {
     this.shouldHide = false;
     this.revealed = false;
     this.bubbleAlpha = 0;
+    this.letterAlpha = 0; // ✨ Added to animate text fade-in separately
 
     this.quickToScale = gsap.quickTo(this, "scale", { duration: 0.3 });
     this.quickToRotation = gsap.quickTo(this, "rotation", { duration: 0.3 });
@@ -40,50 +41,41 @@ class Block {
   }
 
   draw(ctx, image) {
-    // Draw background bubble with fade-in if revealed
+    // ✨ Draw background bubble if revealed
     if (this.revealed && this.letter) {
-        ctx.save();
-        ctx.globalAlpha = this.bubbleAlpha;
-      
-        // Fill (subtle)
-        ctx.fillStyle = "rgba(137, 196, 244, 0.15)";
-        // Outline
-        ctx.strokeStyle = "rgba(137, 196, 244, 0.4)";
-        ctx.lineWidth = 1;
-      
-        const radius = 6;
-        ctx.beginPath();
-        ctx.moveTo(this.x + radius, this.y);
-        ctx.lineTo(this.x + this.width - radius, this.y);
-        ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + radius);
-        ctx.lineTo(this.x + this.width, this.y + this.height - radius);
-        ctx.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - radius, this.y + this.height);
-        ctx.lineTo(this.x + radius, this.y + this.height);
-        ctx.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - radius);
-        ctx.lineTo(this.x, this.y + radius);
-        ctx.quadraticCurveTo(this.x, this.y, this.x + radius, this.y);
-        ctx.closePath();
-      
-        ctx.fill();      // soft blue background
-        ctx.stroke();    // subtle outline
-        ctx.restore();
-      }
+      ctx.save();
+      ctx.globalAlpha = this.bubbleAlpha;
+      ctx.fillStyle = "rgba(137, 196, 244, 0.15)";
+      ctx.strokeStyle = "rgba(137, 196, 244, 0.4)";
+      ctx.lineWidth = 1;
+      const radius = 6;
+      ctx.beginPath();
+      ctx.moveTo(this.x + radius, this.y);
+      ctx.lineTo(this.x + this.width - radius, this.y);
+      ctx.quadraticCurveTo(this.x + this.width, this.y, this.x + this.width, this.y + radius);
+      ctx.lineTo(this.x + this.width, this.y + this.height - radius);
+      ctx.quadraticCurveTo(this.x + this.width, this.y + this.height, this.x + this.width - radius, this.y + this.height);
+      ctx.lineTo(this.x + radius, this.y + this.height);
+      ctx.quadraticCurveTo(this.x, this.y + this.height, this.x, this.y + this.height - radius);
+      ctx.lineTo(this.x, this.y + radius);
+      ctx.quadraticCurveTo(this.x, this.y, this.x + radius, this.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
 
-    // Draw the text
+    // ✨ Draw the text with animated opacity
     ctx.save();
+    ctx.globalAlpha = this.letterAlpha;
     ctx.font = `${this.width * 0.5}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#000";
-    ctx.globalAlpha = 1;
-    if (this.letter) {
-      ctx.fillText(this.letter, this.centerX, this.centerY);
-    } else {
-      ctx.fillText("•", this.centerX, this.centerY);
-    }
+    ctx.fillText(this.letter || "•", this.centerX, this.centerY);
     ctx.restore();
 
-    // Draw sakura petal if not hidden
+    // ✨ Draw sakura petals if not hidden
     if (!this.shouldHide) {
       ctx.save();
       ctx.translate(this.centerX, this.centerY);
@@ -221,54 +213,63 @@ export class Grid {
 
   loadingAnimation() {
     console.log("🌀 Starting preloading stage...");
-  
-    // First, make all sakuras hidden and all blocks revealed
+
+    // 1) Make sakuras hidden and letters invisible
     this.blocks.forEach((block) => {
-      block.shouldHide = true;
-      block.setReveal(true);
-      block.scale = 0;
-      block.rotation = 0;
-    });
-  
-    // Optional: add subtle glow effect via alpha bump (can be customized further)
-    gsap.fromTo(
-      this.blocks,
-      { bubbleAlpha: 0.2 },
-      {
-        bubbleAlpha: 1,
-        duration: 0.6,
-        yoyo: true,
-        repeat: 1,
+        block.shouldHide = true;
+        block.setReveal(false);  // ❗ don't reveal yet
+        block.scale = 0;
+        block.rotation = 0;
+        block.letterAlpha = 0; // start invisible
+      });
+
+    // 2) Animate letter opacity first
+    gsap.to(this.blocks, {
+        letterAlpha: 1,
+        stagger: { amount: 1, from: "random" },
+        duration: 0.8,
         ease: "power1.inOut",
         onComplete: () => {
           console.log("🌸 Starting sakura loading animation...");
-  
-          // Start sakura animation
-          gsap.to(this.blocks, {
-            scale: 1,
-            rotation: 360,
-            stagger: { amount: 2, from: "random" },
-            ease: "back.out(1.7)",
-            duration: 1.4,
+      
+          gsap.fromTo(this.blocks, { bubbleAlpha: 0.2 }, {
+            bubbleAlpha: 1,
+            duration: 0.6,
+            yoyo: true,
+            repeat: 1,
+            ease: "power1.inOut",
             onStart: () => {
               this.blocks.forEach((block) => {
-                block.shouldHide = false;
-                block.setReveal(false);
+                block.setReveal(true); // ✅ only now start reveal
               });
             },
             onComplete: () => {
-              this.blocks.forEach((block) => {
-                block.quickToScale = gsap.quickTo(block, "scale", { duration: 0.3 });
-                block.quickToRotation = gsap.quickTo(block, "rotation", { duration: 0.3 });
+              gsap.to(this.blocks, {
+                scale: 1,
+                rotation: 360,
+                stagger: { amount: 2, from: "random" },
+                ease: "back.out(1.7)",
+                duration: 1.4,
+                onStart: () => {
+                  this.blocks.forEach((block) => {
+                    block.shouldHide = false;
+                  });
+                },
+                onComplete: () => {
+                  this.blocks.forEach((block) => {
+                    block.quickToScale = gsap.quickTo(block, "scale", { duration: 0.3 });
+                    block.quickToRotation = gsap.quickTo(block, "rotation", { duration: 0.3 });
+                  });
+                  this.loadingDone = true;
+                  console.log("🎯 Loading animation complete");
+                  this.startAutoReveal();
+                },
               });
-              this.loadingDone = true;
-              console.log("🎯 Loading animation complete");
-              this.startAutoReveal();
-            },
+            }
           });
-        },
-      }
-    );
+        }
+      });
+      
   }
   
 
@@ -324,8 +325,9 @@ export class Grid {
         delay: i * 0.04,
         ease: "power1.out",
         onStart: () => {
-          block.shouldHide = false;
-          block.setReveal(false);
+            block.revealed = false;
+            block.shouldHide = false;
+            block.setReveal(false);
         }
       });
     });
@@ -364,8 +366,17 @@ export class Grid {
   }
 
   resetAllBlocks(callback) {
-    const activeWordIds = new Set(this.blocks.filter(b => b.revealed).map(b => b.wordId));
+    // First immediately clean up everything
+    this.blocks.forEach((block) => {
+      block.shouldHide = false;
+      block.setReveal(false);
+      block.revealed = false;
+    });
+  
+    // Then properly hide animated words
+    const activeWordIds = new Set(this.blocks.map(b => b.wordId).filter(id => id !== null));
     activeWordIds.forEach((id) => this.hideWord(id, true));
+  
     gsap.delayedCall(0.3, callback);
   }
 

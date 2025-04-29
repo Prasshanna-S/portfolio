@@ -4394,6 +4394,7 @@
       this.shouldHide = false;
       this.revealed = false;
       this.bubbleAlpha = 0;
+      this.letterAlpha = 0;
       this.quickToScale = gsapWithCSS.quickTo(this, "scale", { duration: 0.3 });
       this.quickToRotation = gsapWithCSS.quickTo(this, "rotation", { duration: 0.3 });
     }
@@ -4429,16 +4430,12 @@
         ctx.restore();
       }
       ctx.save();
+      ctx.globalAlpha = this.letterAlpha;
       ctx.font = `${this.width * 0.5}px sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#000";
-      ctx.globalAlpha = 1;
-      if (this.letter) {
-        ctx.fillText(this.letter, this.centerX, this.centerY);
-      } else {
-        ctx.fillText("\u2022", this.centerX, this.centerY);
-      }
+      ctx.fillText(this.letter || "\u2022", this.centerX, this.centerY);
       ctx.restore();
       if (!this.shouldHide) {
         ctx.save();
@@ -4552,46 +4549,55 @@
       console.log("\u{1F300} Starting preloading stage...");
       this.blocks.forEach((block) => {
         block.shouldHide = true;
-        block.setReveal(true);
+        block.setReveal(false);
         block.scale = 0;
         block.rotation = 0;
+        block.letterAlpha = 0;
       });
-      gsapWithCSS.fromTo(
-        this.blocks,
-        { bubbleAlpha: 0.2 },
-        {
-          bubbleAlpha: 1,
-          duration: 0.6,
-          yoyo: true,
-          repeat: 1,
-          ease: "power1.inOut",
-          onComplete: () => {
-            console.log("\u{1F338} Starting sakura loading animation...");
-            gsapWithCSS.to(this.blocks, {
-              scale: 1,
-              rotation: 360,
-              stagger: { amount: 2, from: "random" },
-              ease: "back.out(1.7)",
-              duration: 1.4,
-              onStart: () => {
-                this.blocks.forEach((block) => {
-                  block.shouldHide = false;
-                  block.setReveal(false);
-                });
-              },
-              onComplete: () => {
-                this.blocks.forEach((block) => {
-                  block.quickToScale = gsapWithCSS.quickTo(block, "scale", { duration: 0.3 });
-                  block.quickToRotation = gsapWithCSS.quickTo(block, "rotation", { duration: 0.3 });
-                });
-                this.loadingDone = true;
-                console.log("\u{1F3AF} Loading animation complete");
-                this.startAutoReveal();
-              }
-            });
-          }
+      gsapWithCSS.to(this.blocks, {
+        letterAlpha: 1,
+        stagger: { amount: 1, from: "random" },
+        duration: 0.8,
+        ease: "power1.inOut",
+        onComplete: () => {
+          console.log("\u{1F338} Starting sakura loading animation...");
+          gsapWithCSS.fromTo(this.blocks, { bubbleAlpha: 0.2 }, {
+            bubbleAlpha: 1,
+            duration: 0.6,
+            yoyo: true,
+            repeat: 1,
+            ease: "power1.inOut",
+            onStart: () => {
+              this.blocks.forEach((block) => {
+                block.setReveal(true);
+              });
+            },
+            onComplete: () => {
+              gsapWithCSS.to(this.blocks, {
+                scale: 1,
+                rotation: 360,
+                stagger: { amount: 2, from: "random" },
+                ease: "back.out(1.7)",
+                duration: 1.4,
+                onStart: () => {
+                  this.blocks.forEach((block) => {
+                    block.shouldHide = false;
+                  });
+                },
+                onComplete: () => {
+                  this.blocks.forEach((block) => {
+                    block.quickToScale = gsapWithCSS.quickTo(block, "scale", { duration: 0.3 });
+                    block.quickToRotation = gsapWithCSS.quickTo(block, "rotation", { duration: 0.3 });
+                  });
+                  this.loadingDone = true;
+                  console.log("\u{1F3AF} Loading animation complete");
+                  this.startAutoReveal();
+                }
+              });
+            }
+          });
         }
-      );
+      });
     }
     revealWord(wordId, fromHover = false) {
       if (this.wordTimelineMap.has(wordId)) return;
@@ -4632,6 +4638,7 @@
           delay: i * 0.04,
           ease: "power1.out",
           onStart: () => {
+            block.revealed = false;
             block.shouldHide = false;
             block.setReveal(false);
           }
@@ -4662,7 +4669,12 @@
       loop();
     }
     resetAllBlocks(callback) {
-      const activeWordIds = new Set(this.blocks.filter((b) => b.revealed).map((b) => b.wordId));
+      this.blocks.forEach((block) => {
+        block.shouldHide = false;
+        block.setReveal(false);
+        block.revealed = false;
+      });
+      const activeWordIds = new Set(this.blocks.map((b) => b.wordId).filter((id) => id !== null));
       activeWordIds.forEach((id) => this.hideWord(id, true));
       gsapWithCSS.delayedCall(0.3, callback);
     }
