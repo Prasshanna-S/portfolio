@@ -58,7 +58,36 @@ const ICON_URLS = [
   "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f116ada5d676d43545d3_Github.svg",
   "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f116d3d5ffd8a9768c5b_Instagram.svg",
   "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f116392b81886ae68cc0_Linkedin.svg",
-  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f1157a99d5531416941e_Twitter.svg"
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f1157a99d5531416941e_Twitter.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f116debc3ee99b6b5ac8_Figma.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f116feff8a3c4c7c9f4c_Wikipedia.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6813f1159786590dee047512_Steam.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837acd4a38bc135fdd23f4c_Gaming.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca9d85b68501fa01d0d_WEB%203.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca890c8d2547b16147e_Life%20Hacking.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca85147732db9894b43_AI.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca8b1a11a779607dafb_Programming.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca890c8d2547b16143f_Science.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca824e7b0507047986a_Remote.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca788fcd4e41026cce4_Technology.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837aca7f2d376307a3ef1f9_Startups.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9fcfa86f7c42373db5_Themes.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9fead8cf6533cb7b3a_Trending.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9eccb2139df04b7dc5_Pencil.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9e5a9130db7ed0e7de_Pro.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9eccb2139df04b7dbe_Save.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9eff082011cf4b8b14_Retro%20Camera.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9eee461aa2921224bb_Pen.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9e90c8d2547b160f55_Shuffle.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d81175b18e99f56dd_Pen%20Nib.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d0871af8986e835b9_Globe.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d0871af8986e835b5_Headphones.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d73b8cfafc60f24b4_Music.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d0a1d5c1664c87e69_Heading%201.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d314e91dd48e0b4c7_Crown.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9c73b8cfafc60f2490_Code.svg",
+  "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9c7f192cd5481bc9cc_Paperclip.svg"
+
 ];
 
 // -------- UTILITIES --------
