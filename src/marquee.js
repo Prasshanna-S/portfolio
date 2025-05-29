@@ -64,7 +64,7 @@ export class Marquee {
     // Create the animation
     this.animation = gsap.to(this.wrapper, {
       x: -itemWidth,
-      duration: 2,
+      duration: 10,
       ease: "none",
       repeat: -1,
       onRepeat: () => {

@@ -4337,7 +4337,7 @@
       const itemWidth = this.marqueeInnerWidth + this.gap;
       this.animation = gsapWithCSS.to(this.wrapper, {
         x: -itemWidth,
-        duration: 2,
+        duration: 10,
         ease: "none",
         repeat: -1,
         onRepeat: () => {
