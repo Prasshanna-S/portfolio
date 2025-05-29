@@ -4360,7 +4360,7 @@
   var CONFIG = {
     blockSizeMin: 36,
     blockSizeMax: 52,
-    blockGap: 8,
+    blockGap: 6,
     // <--- NEW: gap between blocks in px
     titleMargin: 1,
     introDuration: 1,

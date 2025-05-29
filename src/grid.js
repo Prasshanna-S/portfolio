@@ -4,7 +4,7 @@ import gsap from "gsap";
 const CONFIG = {
   blockSizeMin: 36,
   blockSizeMax: 52,
-  blockGap: 8,          // <--- NEW: gap between blocks in px
+  blockGap: 6,          // <--- NEW: gap between blocks in px
   titleMargin: 1,
   introDuration: 1.0,
   iconRevealDelay: 0.32,
