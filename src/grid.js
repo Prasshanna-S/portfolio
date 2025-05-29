@@ -667,3 +667,4 @@ export class Grid {
 // After DOM is loaded, run:
 //   new Grid();
 // Canvas element should have class "hero_canvas"
+// new update
