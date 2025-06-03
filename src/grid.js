@@ -88,7 +88,6 @@ const ICON_URLS = [
   "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9d314e91dd48e0b4c7_Crown.svg",
   "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9c73b8cfafc60f2490_Code.svg",
   "https://cdn.prod.website-files.com/6722c9846b76c67b67acccff/6837ac9c7f192cd5481bc9cc_Paperclip.svg"
-
 ];
 
 // -------- UTILITIES --------
@@ -233,12 +232,11 @@ class Block {
 }
 
 // -------- WORD PLACER --------
-// Prevent word overlaps: track all cells occupied by already placed words
 class WordPlacer {
   static placeWords(grid, words, protectedZone, maxWords = CONFIG.revealWordCount) {
     const rows = grid.length, cols = grid[0].length, placed = [], used = new Set();
     let attempts = 0, shuffled = Utils.shuffle(words);
-    const occupied = new Set(); // <--- store "r,c" strings for all word blocks used
+    const occupied = new Set();
     for (const w of shuffled) {
       if (placed.length >= maxWords || attempts >= CONFIG.maxPlacementAttempts) break;
       if (used.has(w)) continue;
@@ -272,7 +270,6 @@ class WordPlacer {
     while (tries < CONFIG.maxDirectionAttempts) {
       const { r0, c0 } = this._getRandomStartPosition(dir, len, rows, cols);
       const pos = this._getWordPositions(r0, c0, dir, len);
-      // --- prevent overlaps with other placed words in this cycle:
       if (this._canPlaceWord(grid, word, pos, zone, occupied)) {
         this._placeWordInGrid(grid, word, pos, idx);
         return { word, positions: pos };
@@ -295,7 +292,6 @@ class WordPlacer {
     return pos.every(({ r, c }, i) => {
       if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length) return false;
       if (this._isInProtectedZone(r, c, zone)) return false;
-      // --- prevent block collision with any already-placed word
       if (occupied && occupied.has(`${r},${c}`)) return false;
       const cell = grid[r][c];
       return !cell || cell.letter === word[i];
@@ -332,13 +328,12 @@ function createSectionVisibilityObserver(canvas, onVisible, onHidden) {
   return observer;
 }
 
-// -------- MAIN GRID CLASS --------
 export class Grid {
   constructor() {
     this.blocks = [];
     this.iconImages = [];
     this.iconReady = false;
-    this.catIndex = 0; // single source of truth for category/phrase
+    this.catIndex = 0;
     this._usedWords = new Set();
     this._currentPlacedWords = [];
     this.currentTimeline = null;
@@ -355,6 +350,7 @@ export class Grid {
     this._ctx = null;
   }
 
+  // ... keep going with your Grid class...
   _initResizeObserver() {
     this.resizeObserver = new ResizeObserver(() => this._onResize());
     requestAnimationFrame(() => {
@@ -662,33 +658,6 @@ export class Grid {
       try { this.blocks[i].draw(this._ctx); } catch { }
     }
     this._ctx.restore();
-      this._applyDitherEffect();
-  }
-
-  _applyDitherEffect() {
-    if (!this._ctx) return;
-    const w = this._canvas.width;
-    const h = this._canvas.height;
-    const img = this._ctx.getImageData(0, 0, w, h);
-    const data = img.data;
-    const map = [0, 8, 2, 10,
-                 12, 4, 14, 6,
-                 3, 11, 1, 9,
-                 15, 7, 13, 5];
-    const mapSize = 4;
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const idx = (y * w + x) * 4;
-        const r = data[idx];
-        const g = data[idx + 1];
-        const b = data[idx + 2];
-        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-        const threshold = map[(x % mapSize) + (y % mapSize) * mapSize] * 16;
-        const val = gray > threshold ? 255 : 0;
-        data[idx] = data[idx + 1] = data[idx + 2] = val;
-      }
-    }
-    this._ctx.putImageData(img, 0, 0);
   }
 
   _killTimeline() { if (this.currentTimeline) this.currentTimeline.kill(); }
@@ -724,4 +693,3 @@ export class Grid {
 // After DOM is loaded, run:
 //   new Grid();
 // Canvas element should have class "hero_canvas"
-// new update
