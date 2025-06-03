@@ -10,6 +10,7 @@ const CONFIG = {
   iconRevealDelay: 0.32,
   flipDuration: 0.68,
   phraseHold: 1.75,
+  //updater
   blankTransitionDuration: 0.44,
   revealWordCount: 7,
   maxPlacementAttempts: 3000,
