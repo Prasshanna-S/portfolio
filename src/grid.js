@@ -138,6 +138,37 @@ export class Grid {
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.blocks.forEach((block) => block.draw(this.ctx, this.sakuraImage)); // <-- pass the image
+    this.applyDitherEffect();
+  }
+
+  // Simple ordered dithering using a 4x4 Bayer matrix
+  applyDitherEffect() {
+    const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    const data = imageData.data;
+
+    const matrix = [
+      [0, 8, 2, 10],
+      [12, 4, 14, 6],
+      [3, 11, 1, 9],
+      [15, 7, 13, 5],
+    ];
+    const matrixSize = 4;
+    const scale = 256 / (matrixSize * matrixSize + 1);
+
+    for (let y = 0; y < this.canvas.height; y++) {
+      for (let x = 0; x < this.canvas.width; x++) {
+        const idx = (y * this.canvas.width + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+        const threshold = matrix[y % matrixSize][x % matrixSize] * scale;
+        const value = gray < threshold ? 0 : 255;
+        data[idx] = data[idx + 1] = data[idx + 2] = value;
+      }
+    }
+
+    this.ctx.putImageData(imageData, 0, 0);
   }
 
   handleResize() {
