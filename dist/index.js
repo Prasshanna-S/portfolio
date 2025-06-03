@@ -5114,6 +5114,46 @@
         }
       }
       this._ctx.restore();
+      this._applyDitherEffect();
+    }
+    _applyDitherEffect() {
+      if (!this._ctx) return;
+      const w = this._canvas.width;
+      const h = this._canvas.height;
+      const img = this._ctx.getImageData(0, 0, w, h);
+      const data = img.data;
+      const map = [
+        0,
+        8,
+        2,
+        10,
+        12,
+        4,
+        14,
+        6,
+        3,
+        11,
+        1,
+        9,
+        15,
+        7,
+        13,
+        5
+      ];
+      const mapSize = 4;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = (y * w + x) * 4;
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+          const threshold = map[x % mapSize + y % mapSize * mapSize] * 16;
+          const val = gray > threshold ? 255 : 0;
+          data[idx] = data[idx + 1] = data[idx + 2] = val;
+        }
+      }
+      this._ctx.putImageData(img, 0, 0);
     }
     _killTimeline() {
       if (this.currentTimeline) this.currentTimeline.kill();
